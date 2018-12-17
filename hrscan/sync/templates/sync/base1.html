@@ -50,8 +50,11 @@
 	<div class="center">
 		<div class="row-md-8">
 			<div class="col-md-8">
+			    <form method="POST">
+			    	{% csrf_token %}
+				<button type="submit" class="btn btn-dark">Calendar To Sheet</button>
 			    <button type="button" class="btn btn-dark" style="margin-right: 15px">Sheet To Calendar</button>
-				<button type="button" class="btn btn-dark">Calendar To synchronizer</button>
+			</form>
 
 			</div>
 		</div>  
