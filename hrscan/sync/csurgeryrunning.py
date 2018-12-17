@@ -26,7 +26,7 @@ def main():
     client = gspread.authorize(creds)
     sheet = client.open_by_url(
             "https://docs.google.com/spreadsheets/d/1Q0OopBJjl5WuxeRNlqpi1V-RGl6PuZbqioPL85bJeSw/edit#gid=0").get_worksheet(
-            0)
+            0)1
 
     name = 'you'
     nominee = 'nominee_name'
