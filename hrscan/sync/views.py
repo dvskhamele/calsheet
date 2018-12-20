@@ -4,6 +4,6 @@ from django.http import HttpResponse
 
 def home(request):
 	if request.method == "POST":
-		from . csurgeryrunning import main
+		from . caltosheet import main
 		main()
 	return render(request,'sync/base1.html')

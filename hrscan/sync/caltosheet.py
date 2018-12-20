@@ -24,9 +24,12 @@ def main():
     scope = ['https://spreadsheets.google.com/feeds']
     creds = ServiceAccountCredentials.from_json_keyfile_name('sync/client_secret.json', scope)
     client = gspread.authorize(creds)
-    sheet = client.open_by_url(
-            "https://docs.google.com/spreadsheets/d/1Q0OopBJjl5WuxeRNlqpi1V-RGl6PuZbqioPL85bJeSw/edit#gid=0").get_worksheet(
-            0)1
+    """sheet = client.open_by_url(
+                        "https://docs.google.com/spreadsheets/d/1Q0OopBJjl5WuxeRNlqpi1V-RGl6PuZbqioPL85bJeSw/edit#gid=0").get_worksheet(
+                        0)
+            """
+    sheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1Mopww1jcxLWRd06kZIIO1Ow9S9goi8yhwjM6pOUZ_Jk/edit#gid=0").get_worksheet(
+            0)
 
     name = 'you'
     nominee = 'nominee_name'
@@ -43,20 +46,42 @@ def main():
 
     service = build('calendar', 'v3', http=creds.authorize(Http()))
 
-    page_token = None
-    while True:
-        calendar_list = service.calendarList().list(pageToken=page_token).execute()
-        for calendar_list_entry in calendar_list['items']:
-                                    print( calendar_list_entry.items())
-                                    print()
-                                    print()
-        page_token = calendar_list.get('nextPageToken')
-        if not page_token:
-            break
-
+    """page_token = None
+                while True:
+                    calendar_list = service.calendarList().list(pageToken=page_token).execute()
+                    for calendar_list_entry in calendar_list['items']:
+                                                print(calendar_list_entry.items())
+                                                print()
+                                                print()
+                    page_token = calendar_list.get('nextPageToken')
+                    if not page_token:
+                        break
+            """
 ##############################################Start from here#############################################
 
-
+        
+    calendarId_record = 'dtfcbt1a37od6hgljl24t96r74@group.calendar.google.com'
+    calendarId_surgeries='3l7etudrleq31c82l2mlgfrddg@group.calendar.google.com'
+    calendarId_important = 'ri5l7up5u0taqlka6d3cv38gf8@group.calendar.google.com'
+    service = build('calendar', 'v3', http=creds.authorize(Http()))
+    page_token = None
+    while True:
+      events = service.events().list(calendarId=calendarId_surgeries, pageToken=page_token).execute()
+      for event in events['items']:
+        events_u=(event['kind'],event['summary'],event['description'],event['updated'],event['start'],event['end'],event['htmlLink'])
+        sheet.update_cell(1,event['kind'])
+        sheet.update_cell(2,event['description'])
+        sheet.update_cell(3,event['updated'])
+        sheet.update_cell(4,event['start'])
+        sheet.update_cell(5,event['end'])
+        sheet.update_cell(6,event['htmlLink'])   
+        print("Events of Users:",events_u)
+        print ("|")
+        print ("|")
+        print ("|")
+      page_token = events.get('nextPageToken')
+      if not page_token:
+        break
 
 
 
