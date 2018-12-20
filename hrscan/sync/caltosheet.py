@@ -14,6 +14,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 # If modifying these scopes, delete the file token.json.
 SCOPES = 'https://www.googleapis.com/auth/calendar'
 
+
 def main():
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
@@ -21,21 +22,18 @@ def main():
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
+
     scope = ['https://spreadsheets.google.com/feeds']
     creds = ServiceAccountCredentials.from_json_keyfile_name('sync/client_secret.json', scope)
     client = gspread.authorize(creds)
-    """sheet = client.open_by_url(
+    sheet = client.open_by_url(
                         "https://docs.google.com/spreadsheets/d/1Q0OopBJjl5WuxeRNlqpi1V-RGl6PuZbqioPL85bJeSw/edit#gid=0").get_worksheet(
                         0)
-            """
-    sheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1Mopww1jcxLWRd06kZIIO1Ow9S9goi8yhwjM6pOUZ_Jk/edit#gid=0").get_worksheet(
-            0)
 
     name = 'you'
     nominee = 'nominee_name'
     relation = 'relation'
     r = 0
-
 
     from oauth2client import file, client, tools
     store = file.Storage('sync/token.json')
@@ -65,24 +63,28 @@ def main():
     calendarId_important = 'ri5l7up5u0taqlka6d3cv38gf8@group.calendar.google.com'
     service = build('calendar', 'v3', http=creds.authorize(Http()))
     page_token = None
+    ids=sheet.col_values(21)
+    row=sheet.row_values(6)
+    row_to_update = len(ids)+1
+
     while True:
       events = service.events().list(calendarId=calendarId_surgeries, pageToken=page_token).execute()
+      events_u=events['description'],events['htmlLink']
       for event in events['items']:
-        events_u=(event['kind'],event['summary'],event['description'],event['updated'],event['start'],event['end'],event['htmlLink'])
-        sheet.update_cell(1,event['kind'])
-        sheet.update_cell(2,event['description'])
-        sheet.update_cell(3,event['updated'])
-        sheet.update_cell(4,event['start'])
-        sheet.update_cell(5,event['end'])
-        sheet.update_cell(6,event['htmlLink'])   
-        print("Events of Users:",events_u)
-        print ("|")
-        print ("|")
-        print ("|")
+        if event['id'] not in ids:
+            sheet.update_cell(row_to_update, 21, event['id'])
+            sheet.update_cell(row_to_update, 11, event['start'])
+            sheet.update_cell(row_to_update, 12, event['end'])
+            sheet.update_cell(row_to_update, 1, event['description'])
+            sheet.update_cell(row_to_update, 20, event['htmlLink'])
+        
+            print("Events of Users:",events_u)
+            print ("|")
+            print ("|")
+            print ("|")
       page_token = events.get('nextPageToken')
       if not page_token:
         break
-
 
 
 if __name__ == '__main__':
