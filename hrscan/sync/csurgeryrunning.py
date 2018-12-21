@@ -26,7 +26,7 @@ def main():
     client = gspread.authorize(creds)
     sheet = client.open_by_url(
             "https://docs.google.com/spreadsheets/d/1Q0OopBJjl5WuxeRNlqpi1V-RGl6PuZbqioPL85bJeSw/edit#gid=0").get_worksheet(
-            0)1
+            0)
 
     name = 'you'
     nominee = 'nominee_name'
@@ -58,7 +58,7 @@ def main():
     print('Getting the upcoming 10 events')
 
 
-    for j in range(2,len(sheet.col_values(2))+1):
+    for j in range(6,len(sheet.col_values(2))+1):
         colorid = 1
         if str(sheet.row_values(j)[17]) == "Green":
           colorid = 3
