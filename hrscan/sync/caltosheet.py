@@ -67,21 +67,55 @@ def main():
     row=sheet.row_values(6)
     row_to_update = len(ids)+1
 
+
+
     while True:
-      events = service.events().list(calendarId=calendarId_surgeries, pageToken=page_token).execute()
-      events_u=events['description'],events['htmlLink']
-      for event in events['items']:
+      eventss = service.events().list(calendarId=calendarId_surgeries, pageToken=page_token).execute()
+      for key, value in eventss.items():
+        try:
+          for key, value in value.items():
+           
+                        print(key,value)
+                        print()
+                        events_u=events['description'],events['htmlLink']
+        except:
+            pass                                                                               
+                                                                                                
+
+      for event in eventss['items']:
         if event['id'] not in ids:
-            sheet.update_cell(row_to_update, 21, event['id'])
-            sheet.update_cell(row_to_update, 11, event['start'])
-            sheet.update_cell(row_to_update, 12, event['end'])
-            sheet.update_cell(row_to_update, 1, event['description'])
-            sheet.update_cell(row_to_update, 20, event['htmlLink'])
-        
-            print("Events of Users:",events_u)
-            print ("|")
-            print ("|")
-            print ("|")
+          sheet.update_cell(row_to_update, 21, event['id'])
+
+          date_s = str(event['start'])
+          ab=str(date_s[14:24])                   
+          bc= str(date_s[26:39])
+          sheet.update_cell(row_to_update, 11, ab)
+          sheet.update_cell(row_to_update, 13, bc)
+
+          date_e = str(event['end'])
+          de=str(date_s[14:24])                   
+          ef= str(date_s[26:39])
+          sheet.update_cell(row_to_update, 12, de)
+          sheet.update_cell(row_to_update, 14, de)
+  
+          des = str(event['description']).split("\n")          
+          a= str(des[1])
+          b= str(des[2])
+          c= str(des[3])
+          d= str(des[4])          
+          e= str(des[5])
+          f= str(des[6])
+          sheet.update_cell(row_to_update,1, a[10:])
+          sheet.update_cell(row_to_update,2, b[8:])
+          sheet.update_cell(row_to_update,3, c[9:])
+          sheet.update_cell(row_to_update,4, d[5:])
+          sheet.update_cell(row_to_update,6, e[24:])
+          sheet.update_cell(row_to_update,7, f[12:])
+
+          sheet.update_cell(row_to_update, 20, event['htmlLink'])
+
+
+
       page_token = events.get('nextPageToken')
       if not page_token:
         break
