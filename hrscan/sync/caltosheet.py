@@ -14,6 +14,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 # If modifying these scopes, delete the file token.json.
 SCOPES = 'https://www.googleapis.com/auth/calendar'
 
+import time 
 
 def main():
     """Shows basic usage of the Google Calendar API.
@@ -33,7 +34,6 @@ def main():
     name = 'you'
     nominee = 'nominee_name'
     relation = 'relation'
-    r = 0
 
     from oauth2client import file, client, tools
     store = file.Storage('sync/token.json')
@@ -41,8 +41,6 @@ def main():
     if not creds or creds.invalid:
         flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
         creds = tools.run_flow(flow, store)
-
-    service = build('calendar', 'v3', http=creds.authorize(Http()))
 
     """page_token = None
                 while True:
@@ -69,8 +67,8 @@ def main():
 
 
 
-    while True:
-      eventss = service.events().list(calendarId=calendarId_surgeries, pageToken=page_token).execute()
+    for calendarId in [calendarId_record, calendarId_surgeries, calendarId_important ]:
+      eventss = service.events().list(calendarId=calendarId, pageToken=page_token).execute()
       for key, value in eventss.items():
         try:
           for key, value in value.items():
@@ -84,41 +82,60 @@ def main():
 
       for event in eventss['items']:
         if event['id'] not in ids:
-          sheet.update_cell(row_to_update, 21, event['id'])
+          row_to_update = row_to_update +1
+          time.sleep(1)
+          if calendarId==calendarId_surgeries:
+            sheet.update_cell(row_to_update, 16, 'no')
+            sheet.update_cell(row_to_update, 19, 'Democalender')
 
+          if calendarId==calendarId_important:
+            sheet.update_cell(row_to_update, 16, 'no')
+            sheet.update_cell(row_to_update, 19, 'Important')
+          if calendarId==calendarId_record:
+            sheet.update_cell(row_to_update, 16, 'yes')
+            sheet.update_cell(row_to_update, 19, 'Records')
+          sheet.update_cell(row_to_update, 21, event['id'])
+          time.sleep(1)
           date_s = str(event['start'])
           ab=str(date_s[14:24])                   
           bc= str(date_s[26:39])
+          try:
+            loct = str(event['location'])
+            sheet.update_cell(row_to_update, 10, loct)
+            print(loct)
+          except:
+            pass
+          sheet.update_cell(row_to_update, 16, str(event['reminders']["overrides"][0]["method"]))
           sheet.update_cell(row_to_update, 11, ab)
           sheet.update_cell(row_to_update, 13, bc)
 
           date_e = str(event['end'])
+          print (date_e)
           de=str(date_s[14:24])                   
-          ef= str(date_s[26:39])
           sheet.update_cell(row_to_update, 12, de)
-          sheet.update_cell(row_to_update, 14, de)
-  
+          ef= str(date_s[26:39])
+          time.sleep(1)  
+          sheet.update_cell(row_to_update, 14, ef)
           des = str(event['description']).split("\n")          
+          print("Updating", event["id"])
           a= str(des[1])
-          b= str(des[2])
-          c= str(des[3])
-          d= str(des[4])          
-          e= str(des[5])
-          f= str(des[6])
           sheet.update_cell(row_to_update,1, a[10:])
+          b= str(des[2])
           sheet.update_cell(row_to_update,2, b[8:])
+          time.sleep(1)  
+          c= str(des[3])
           sheet.update_cell(row_to_update,3, c[9:])
+          d= str(des[4])          
           sheet.update_cell(row_to_update,4, d[5:])
+          e= str(des[5])
+          time.sleep(1)  
           sheet.update_cell(row_to_update,6, e[24:])
+          f= str(des[6])
           sheet.update_cell(row_to_update,7, f[12:])
-
           sheet.update_cell(row_to_update, 20, event['htmlLink'])
+        else:
+                    print("already Updating", event["id"])
 
-
-
-      page_token = events.get('nextPageToken')
-      if not page_token:
-        break
 
 
 if __name__ == '__main__':
