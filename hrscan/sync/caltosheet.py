@@ -107,6 +107,7 @@ def main():
             pass
           sheet.update_cell(row_to_update, 16, str(event['reminders']["overrides"][0]["method"]))
           sheet.update_cell(row_to_update, 11, ab)
+          time.sleep(1)
           sheet.update_cell(row_to_update, 13, bc)
 
           date_e = str(event['end'])
@@ -132,6 +133,7 @@ def main():
           sheet.update_cell(row_to_update,6, e[24:])
           f= str(des[6])
           sheet.update_cell(row_to_update,7, f[12:])
+          time.sleep(1)
           sheet.update_cell(row_to_update, 20, event['htmlLink'])
         else:
                     print("already Updating", event["id"])

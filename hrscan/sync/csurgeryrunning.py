@@ -10,6 +10,7 @@ from httplib2 import Http
 from oauth2client import file, client, tools
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import time
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = 'https://www.googleapis.com/auth/calendar'
@@ -107,10 +108,12 @@ def main():
         calendarId_important = 'ri5l7up5u0taqlka6d3cv38gf8@group.calendar.google.com'
 
         if str(sheet.row_values(j)[15])=="yes" and str(sheet.row_values(j)[18])!="Cancelledcallender":
+          time.sleep(1)
           sheet.update_cell(j, 20, "-")
           sheet.update_cell(j, 21, "-")
           event_s = service.events().insert(calendarId='3l7etudrleq31c82l2mlgfrddg@group.calendar.google.com', body=event1).execute()
           event_id= event_s.get('id')
+          time.sleep(1)
           service.events().delete(calendarId=calendarId_surgeries , eventId=event_id ).execute()
 
           event = service.events().insert(calendarId='3l7etudrleq31c82l2mlgfrddg@group.calendar.google.com', body=event1).execute()
@@ -119,6 +122,7 @@ def main():
           sheet.update_cell(j, 19, "Cancelledcallender")
           sheet.update_cell(j, 20, event.get('htmlLink'))
           sheet.update_cell(j, 21, event.get('id'))
+          time.sleep(1)
 
           if str(sheet.row_values(j)[18])=="Important":
             updated_event = service.events().move(
@@ -134,6 +138,7 @@ def main():
           event = service.events().insert(calendarId=calendarId_important, body=event1).execute()
           print('Event created: %s' % (event.get('htmlLink')))
           event_id= print(event.get('id'))
+          time.sleep(1)
           sheet.update_cell(j, 20, event.get('htmlLink'))
           sheet.update_cell(j, 21, event.get('id'))
           # Print the updated date.
@@ -142,13 +147,12 @@ def main():
           event = service.events().insert(calendarId=calendarId_surgeries, body=event1).execute()
           print('Event created: %s' % (event.get('htmlLink')))
           event_id= print(event.get('id'))
+          time.sleep(1)
           sheet.update_cell(j, 20, event.get('htmlLink'))
           sheet.update_cell(j, 21, event.get('id'))
           # Print the updated date.
 
         else:
-          print(sheet.row_values(j)[15])
-          print(sheet.row_values(j)[18])
           print("What is wrongs")
 
 if __name__ == '__main__':
